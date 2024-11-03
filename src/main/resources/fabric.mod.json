@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "cosmic-reach-fabric-api",
+  "name": "Cosmic Reach Fabric API",
+  "version": "${version}",
+  "environment": "*",
+
+  "description": "Core API module providing key hooks and inter-compatibility features for Cosmic Reach.",
+  "authors": [
+    "coolsim"
+  ],
+  "mixins": [
+    "cosmic-reach-fabric-api.mixins.json"
+  ],
+
+  "icon": "assets/cosmic-reach-fabric-api/icon.png",
+
+  "depends": {
+    "fabricloader": ">=0.15.0",
+    "cosmicreach": ">=0.1.0",
+    "java": ">=17"
+  }
+}

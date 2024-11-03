@@ -1,0 +1,89 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'eclipse'
+}
+
+group = 'net.coolsimulations.cosmicreach.fabric'
+archivesBaseName = "cosmic-reach-fabric-api-${fabric_version}+0.1.0"
+
+repositories {
+    maven {
+        url "https://maven.fabricmc.net/"
+    }
+    maven {
+        url 'https://jitpack.io'
+    }
+    mavenCentral() {
+        content {
+            // Force ME to come from the fabric maven.
+            // This ensures that the version has been mirrored for use by the launcher/installer.
+            excludeGroupByRegex "io.github.llamalad7"
+        }
+    }
+}
+
+dependencies {
+    compileOnly group: 'org.jetbrains', name: 'intellij-fernflower', version: '1.2.1.16'
+    implementation group: 'net.fabricmc', name: 'fabric-loader', version: '0.15.7'
+
+    //mixin requirements:
+    api("net.fabricmc:sponge-mixin:${mixin_version}") {
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+    }
+    implementation 'com.google.guava:guava:21.0'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.9'
+    implementation fileTree(dir: 'libs', include: '*.jar')
+
+    api 'org.ow2.sat4j:org.ow2.sat4j.core:2.3.6'
+    api 'org.ow2.sat4j:org.ow2.sat4j.pb:2.3.6'
+    api "net.fabricmc:tiny-remapper:0.10.1"
+    api "net.fabricmc:access-widener:2.1.0"
+    api ('net.fabricmc:mapping-io:0.5.0') {
+        // Mapping-io depends on ASM, dont bundle
+        transitive = false
+    }
+
+    api "io.github.llamalad7:mixinextras-fabric:$mixin_extras_version"
+
+    implementation 'org.jetbrains:annotations:23.0.0'
+
+    // Unit testing for mod metadata
+    implementation('org.junit.jupiter:junit-jupiter:5.9.2')
+
+}
+
+java {
+    withSourcesJar()
+}
+
+processResources {
+    inputs.property "version", "${fabric_version}"
+
+    filesMatching("fabric.mod.json") {
+        expand "version": "${fabric_version}"
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 17
+}
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' '),
+                'Specification-Version': 8.0,
+                'Multi-Release': 'true'
+        )
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+    }
+}
